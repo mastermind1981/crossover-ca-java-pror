@@ -31,10 +31,9 @@ public class PropTypeMapper {
         converters.put("jpa.showSql", PropTypeMapper::isBoolean);
 
         converters.put("JDBC_DRIVER", PropTypeMapper::isValidJavaIdentifier);
+        converters.put("JDBC_URL", PropTypeMapper::isValidJavaIdentifier);
 
 
-
-//        JDBC_DRIVER=com.mysql.jdbc.Driver
 //        JDBC_URL=jdbc:mysql://localhost/test
 //        JDBC_USERNAME=username123
 //        JDBC_PASSWORD=password123
@@ -45,8 +44,7 @@ public class PropTypeMapper {
     }
 
     private static final Pattern validJavaIdentifier = Pattern
-            .compile("(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)*\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
-
+        .compile("(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)*\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
     private static Boolean isBoolean(String s) {
         return Boolean.parseBoolean(s) || !Boolean.parseBoolean(s);
