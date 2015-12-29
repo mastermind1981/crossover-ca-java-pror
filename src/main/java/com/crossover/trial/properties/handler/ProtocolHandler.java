@@ -1,6 +1,7 @@
 package com.crossover.trial.properties.handler;
 
 /**
+ * Handles different protocols for URLConnection
  * Created by thiago-rs on 12/28/15.
  */
 
@@ -9,9 +10,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-/** A {@link URLStreamHandler} that handles resources on the classpath. */
+/**
+ * A {@link URLStreamHandler} that handles resources on the classpath.
+ */
 public class ProtocolHandler extends URLStreamHandler {
-    /** The classloader to find resources from. */
+    /**
+     * The classloader to find resources from.
+     */
     private final ClassLoader classLoader;
 
     public ProtocolHandler() {

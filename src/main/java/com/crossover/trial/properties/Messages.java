@@ -1,6 +1,7 @@
 package com.crossover.trial.properties;
 
 /**
+ * Messages
  * Created by thiago-rs on 12/28/15.
  */
 public class Messages {

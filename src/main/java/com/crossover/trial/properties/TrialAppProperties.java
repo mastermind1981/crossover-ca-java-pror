@@ -5,18 +5,18 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * A dummy implementation of TrialAppProperties, this clearly doesn't work. Candidates SHOULD change 
+ * A dummy implementation of TrialAppProperties, this clearly doesn't work. Candidates SHOULD change
  * this class to add their implementation. You are also free to create additional classes
- *
+ * <p/>
  * note: a default constructor is required.
  *
  * @author code test administrator
  */
 public class TrialAppProperties implements AppProperties {
 
-    private Map<String,Object> props;
+    private Map<String, Object> props;
 
-    public TrialAppProperties(Map<String,Object> props) {
+    public TrialAppProperties(Map<String, Object> props) {
         this.props = props;
     }
 
@@ -54,11 +54,11 @@ public class TrialAppProperties implements AppProperties {
 
     @Override
     public AppProperties concat(AppProperties that) {
-        final Map<String,Object> mThis = new HashMap<>(this.props);
+        final Map<String, Object> mThis = new HashMap<>(this.props);
 
         that.getKnownProperties().forEach(k -> {
             final String key = String.valueOf(k);
-            mThis.put(key,that.get(key));
+            mThis.put(key, that.get(key));
         });
 
         return new TrialAppProperties(mThis);

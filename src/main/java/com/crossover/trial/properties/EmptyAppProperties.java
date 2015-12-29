@@ -4,9 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Represents an EmptyProperty Set
  * Created by thiago-rs on 12/28/15.
  */
-public class EmptyAppProperties implements AppProperties{
+public class EmptyAppProperties implements AppProperties {
 
     @Override
     public List<String> getMissingProperties() {
