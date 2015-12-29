@@ -35,9 +35,9 @@ public class PropertiesLoader {
     public PropertiesLoader(String uri) {
         this.uri = uri;
 
-        if(uri.endsWith(".json")){
+        if(uri != null && uri.endsWith(".json")){
             this.parser = new JsonPropertiesParser();
-        }else if(uri.endsWith(".properties")){
+        }else if(uri != null && uri.endsWith(".properties")){
             this.parser = new PropertiesFileParser();
         }
     }
@@ -47,9 +47,7 @@ public class PropertiesLoader {
      * @return AppProperties
      * @throws Exception whenever can't load from URI
      */
-    public Optional<AppProperties> loadProps(){
-
-        Optional<AppProperties> opt = Optional.empty();
+    public AppProperties loadProps() throws UnsupportedOperationException{
 
         try{
 
@@ -57,24 +55,31 @@ public class PropertiesLoader {
             final Map<String,Object> props =
                     parser.parseInput(url.openStream());
 
-           opt = Optional.of(new TrialAppProperties(props));
+            return new TrialAppProperties(props);
 
         }catch (NullPointerException npe) {
-            log.error(Messages.CANT_LOAD_PARSER+": "+uri,npe);
-        } catch (IOException e) {
-            e.printStackTrace();
+            new UnsupportedOperationException(Messages.CANT_LOAD_PARSER+": "+uri,npe);
+        } catch (MalformedURLException mfe) {
+            new UnsupportedOperationException(Messages.CANT_LOAD_PROPERTIES+": "+uri,mfe);
+        } catch (IOException ioe) {
+            new UnsupportedOperationException(ioe);
         }
 
-        return opt;
+        throw new UnsupportedOperationException(Messages.CANT_LOAD_PROPERTIES+": "+uri);
 
     }
 
     public URL buildUrl() throws MalformedURLException {
 
-        if(uri.startsWith("classpath")){
-            return new URL(null, uri, protocolHandler);
-        }else return new URL(uri);
+        try {
 
+            if (uri.startsWith("classpath")) {
+                return new URL(null, uri, protocolHandler);
+            } else return new URL(uri);
+        }catch (NullPointerException npe){
+            log.error(npe);
+            throw new MalformedURLException();
+        }
 
     }
 

@@ -13,49 +13,50 @@ import static org.junit.Assert.fail;
  */
 public class PropertiesLoaderTest {
 
-//    private final PropertiesLoaderFactory plFactory = new PropertiesLoaderFactory();
-//
-//    @Test(expected = NoSuchElementException.class)
-//    public void testUnsuportedProtocolLoader(){
-//
-//        final String uri = "xxx:resources/jdbc.properties";
-//
-//        plFactory.getLoader(uri).orElseThrow(() -> new NoSuchElementException(
-//                String.format("%s: %s", Messages.CANT_LOAD_PROPERTIES, uri)));
-//
-//        fail();
-//    }
-//
-//    @Test(expected = NoSuchElementException.class)
-//    public void testNullProtocolLoader(){
-//
-//        plFactory.getLoader(null).orElseThrow(() -> new NoSuchElementException(
-//                String.format("%s: %s", Messages.CANT_LOAD_PROPERTIES, "")));
-//
-//        fail();
-//    }
-//
-//
-//    @Test()
-//    public void testClasspathLoader(){
-//
-//        final String uri = "classpath:resources/jdbc.properties";
-//
-//        assertTrue("Wrong loader for classpath",
-//                plFactory.getLoader(uri).get().getClass().isAssignableFrom(ClasspathPropertiesLoader.class));
-//
-//    }
-//
-//    @Test()
-//    public void testFileSystemLoader(){
-//
-//        final String uri = "file:///tmp/aws.properties";
-//
-//        assertTrue("Wrong loader for file system",
-//                plFactory.getLoader(uri).get().getClass().isAssignableFrom(FileSystemPropertiesLoader.class));
-//
-//    }
-//
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnsuportedProtocolLoader(){
+
+        final String uri = "xxx:resources/jdbc.properties";
+        final PropertiesLoader propsLoader = new PropertiesLoader(uri);
+        propsLoader.loadProps();
+
+        fail("Protocol should be unsupported");
+
+    }
+
+      @Test(expected = UnsupportedOperationException.class)
+    public void testNullProtocolLoader(){
+
+        new PropertiesLoader(null).loadProps();
+
+          fail("Null URI should be unsupported");
+    }
+
+
+    @Test()
+    public void testClasspathURI(){
+
+        final String uri = "classpath:jdbc.properties";
+
+        final PropertiesLoader propsLoader = new PropertiesLoader(uri);
+        final AppProperties ap = propsLoader.loadProps();
+
+        assertTrue("Cant load classpath:jdbc.properties", ap.getKnownProperties().size() == 5);
+        assertTrue("Unhandle property type", ap.getMissingProperties().size() == 0);
+
+    }
+
+      @Test()
+    public void testFileSystemLoader(){
+
+        final String uri = this.getClass().getClassLoader().getResource("aws.properties").toExternalForm();
+        final PropertiesLoader propsLoader = new PropertiesLoader(uri);
+        final AppProperties ap = propsLoader.loadProps();
+
+        assertTrue("Cant load file:///...aws.properties", ap.getKnownProperties().size() == 4);
+        assertTrue("Unhandle property type", ap.getMissingProperties().size() == 0);
+      }
+
 //    @Test()
 //    public void testHttpLoader(){
 //

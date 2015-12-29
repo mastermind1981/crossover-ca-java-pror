@@ -1,5 +1,6 @@
 package com.crossover.trial.properties;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,12 +10,12 @@ public class EmptyAppProperties implements AppProperties{
 
     @Override
     public List<String> getMissingProperties() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<?> getKnownProperties() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -34,6 +35,6 @@ public class EmptyAppProperties implements AppProperties{
 
     @Override
     public AppProperties concat(AppProperties that) {
-        return null;
+        return that;
     }
 }

@@ -26,8 +26,6 @@ public class Main {
      */
     public static void main(String[] args) throws URISyntaxException, IOException {
 
-        System.out.println(Boolean.parseBoolean("true"));
-
         // process command line arguments into URIs
         File outputFile = new File(args[0]);
         if (outputFile.exists()) {

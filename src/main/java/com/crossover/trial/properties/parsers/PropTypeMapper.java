@@ -5,8 +5,8 @@ import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.IntegerValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 
-import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -16,71 +16,84 @@ import java.util.regex.Pattern;
  */
 public class PropTypeMapper {
 
-    private static Map<String, Function<String, Boolean>> converters = new ConcurrentHashMap<>();
+    private static Map<String, Function<String, Optional<Object>>> converters = new ConcurrentHashMap<>();
 
     static{
-        converters.put("aws_access_key", v -> v != null && Pattern.compile("^[A-Z]+$").matcher(v).find());
+        converters.put("aws_access_key", PropTypeMapper::isUpperCase);
         converters.put("aws_secret_key", PropTypeMapper::isNonEmptyString);
-        converters.put("aws_account_id", PropTypeMapper::isInteger);
-        converters.put("aws_region_id", PropTypeMapper::isAwsRegion);
+        converters.put("aws_account_id", PropTypeMapper::toInteger);
+        converters.put("aws_region_id", PropTypeMapper::toAwsRegion);
 
         converters.put("auth.endpoint.uri", PropTypeMapper::isValidURL);
-        converters.put("job.timeout", PropTypeMapper::isInteger);
+        converters.put("job.timeout", PropTypeMapper::toInteger);
         converters.put("sns.broadcast.topic_name", PropTypeMapper::isNonEmptyString);
-        converters.put("score.factor", PropTypeMapper::isDouble);
-        converters.put("jpa.showSql", PropTypeMapper::isBoolean);
+        converters.put("score.factor", PropTypeMapper::toDouble);
+        converters.put("jpa.showSql", PropTypeMapper::toBoolean);
 
         converters.put("JDBC_DRIVER", PropTypeMapper::isValidJavaIdentifier);
-        converters.put("JDBC_URL", PropTypeMapper::isValidJavaIdentifier);
+        converters.put("JDBC_URL", PropTypeMapper::isValidJDBCURL);
+        converters.put("JDBC_USERNAME", PropTypeMapper::isNonEmptyString);
+        converters.put("JDBC_PASSWORD", PropTypeMapper::isNonEmptyString);
+        converters.put("JPA_SHOWSQL", PropTypeMapper::toBoolean);
+    }
 
+    public static Function<String, Optional<Object>> getConverterFunction(String key){
+        return converters.getOrDefault(key, v -> Optional.of(v));
+    }
 
-//        JDBC_URL=jdbc:mysql://localhost/test
-//        JDBC_USERNAME=username123
-//        JDBC_PASSWORD=password123
-//        JPA_SHOWSQL=true
-
-//                "jpa.showSql": false
-
+    private static Optional<Object> isUpperCase(String s) {
+        return  s != null && Pattern.compile("^[A-Z0-9]+$").matcher(s).matches()?
+                Optional.of(s) : Optional.of(String.class);
     }
 
     private static final Pattern validJavaIdentifier = Pattern
         .compile("(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)*\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
-    private static Boolean isBoolean(String s) {
-        return Boolean.parseBoolean(s) || !Boolean.parseBoolean(s);
+    private static Optional<Object> toBoolean(String s) {
+        return Boolean.parseBoolean(s) || !Boolean.parseBoolean(s)?
+                Optional.of(Boolean.parseBoolean(s)) : Optional.of(String.class);
     }
 
-    private static Boolean isDouble(String s) {
-        return new DoubleValidator().isValid(s);
+    private static Optional<Object> toDouble(String s) {
+        return new DoubleValidator().isValid(s)?
+                Optional.of(Double.valueOf(s)) : Optional.of(Double.class);
     }
 
-    private static Boolean isNonEmptyString(String s) {
-        return s != null && !s.isEmpty();
+    private static Optional<Object> isNonEmptyString(String s) {
+        return s != null && !s.isEmpty()?
+                Optional.of(s) : Optional.of(String.class);
     }
 
-    public Function<String, Boolean> getConverterFunction(String key){
-        return converters.getOrDefault(key, v -> true);
-    }
 
-    private static boolean isAwsRegion(String v){
+
+    private static Optional<Object> toAwsRegion(String v){
         try{
-            return v != null && Regions.fromName(v) != null;
+            return Optional.of(Regions.fromName(v));
         }catch (IllegalArgumentException e) {
-            return false;
+            return Optional.of(Regions.class);
         }
     }
 
-    private static boolean isValidURL(String url){
-        return new UrlValidator(new String[]{"http","https"}).isValid(url);
+    private static Optional<Object> isValidURL(String url){
+        return new UrlValidator(new String[]{"http","https"},
+                UrlValidator.ALLOW_LOCAL_URLS).isValid(url)?
+                Optional.of(url) : Optional.empty();
     }
 
-    private static boolean isInteger(String i){
-        return new IntegerValidator().isValid(i);
+    private static Optional<Object> isValidJDBCURL(String url){
+        return url !=null && url.startsWith("jdbc")?
+                Optional.of(url) : Optional.of(String.class);
     }
 
-    private static boolean isValidJavaIdentifier(String i){
-        return validJavaIdentifier.matcher(i).matches();
+
+    private static Optional<Object> toInteger(String i){
+        return new IntegerValidator().isValid(i)?
+                Optional.of(Integer.parseInt(i)) : Optional.of(Integer.class);
     }
 
+    private static Optional<Object> isValidJavaIdentifier(String i){
+        return validJavaIdentifier.matcher(i).matches()?
+                Optional.of(i) : Optional.of(String.class);
+    }
 
 }

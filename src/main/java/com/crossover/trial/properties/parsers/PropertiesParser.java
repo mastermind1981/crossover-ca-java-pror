@@ -12,19 +12,4 @@ public interface PropertiesParser {
 
     Map<String,Object> parseInput(InputStream is) throws IOException;
 
-    default Object parsePropValue(Object value){
-
-        final String val = value.toString();
-        final Pattern p = Pattern.compile("^(-?)\\d+$");
-
-        if(p.matcher(val).find()) {
-            return Integer.parseInt(val);
-        }else if(val.equalsIgnoreCase("true") ||
-                val.equalsIgnoreCase("false")){
-            return Boolean.parseBoolean(val);
-        }
-
-        return val;
-    }
-
 }

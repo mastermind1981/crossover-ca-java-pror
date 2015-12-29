@@ -1,5 +1,9 @@
-JDBC_URL, class java.lang.String, dummy
-JDBC_USERNAME, class java.lang.String, dummy
-JDBC_DRIVER, class java.lang.String, dummy
-JDBC_PASSWORD, class java.lang.String, dummy
-JPA_SHOWSQL, class java.lang.String, dummy
+JDBC_DRIVER, java.lang.String, com.mysql.jdbc.Driver
+JDBC_PASSWORD, java.lang.String, password123
+JDBC_URL, java.lang.String, jdbc:mysql://localhost/test
+JDBC_USERNAME, java.lang.String, username123
+JPA_SHOWSQL, java.lang.Boolean, true
+aws_access_key, java.lang.String,  
+aws_account_id, java.lang.Integer, 12345678
+aws_region_id, com.amazonaws.regions.Regions, US_EAST_1
+aws_secret_key, java.lang.String, pmqnweEYvdiw7cvCdTOES48sOUvK1rGvvctBsgsa

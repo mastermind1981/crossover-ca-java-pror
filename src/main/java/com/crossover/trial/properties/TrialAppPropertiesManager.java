@@ -33,13 +33,9 @@ public class TrialAppPropertiesManager implements AppPropertiesManager {
             try{
 
                 final PropertiesLoader propsLoader = new PropertiesLoader(x);
-                final AppProperties ap = propsLoader.loadProps()
-                    .orElseThrow(() -> new NoSuchElementException(
-                    String.format("%s: %s",Messages.CANT_LOAD_PROPERTIES, x)));
+                props.add(propsLoader.loadProps());
 
-                props.add(ap);
-
-            }catch (NoSuchElementException nsee){
+            }catch (UnsupportedOperationException nsee){
                 log.error(nsee);
             }
 
@@ -53,10 +49,21 @@ public class TrialAppPropertiesManager implements AppPropertiesManager {
 
     @Override
     public void printProperties(AppProperties props, PrintStream sync) {
-        props.getKnownProperties().forEach(k -> {
+        props.getKnownProperties()
+            .stream().sorted((k1,k2) -> k1.toString().compareTo(k2.toString()))
+            .forEach(k -> {
             final String key = String.valueOf(k);
             final Object value = props.get(key);
-            sync.println(String.format("%s, %s, %s",key,value.getClass(),value));
+
+            final Object className = value.getClass().isAssignableFrom(Class.class)?
+                ((Class)value).getName()
+                :value.getClass().getName();
+
+            sync.println(
+                    String.format("%s, %s, %s",
+                        key,
+                        className,
+                        value.getClass().isAssignableFrom(Class.class)?" ":value));
         });
     }
 }

@@ -1,6 +1,8 @@
 package com.crossover.trial.properties;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * A dummy implementation of TrialAppProperties, this clearly doesn't work. Candidates SHOULD change 
@@ -20,12 +22,19 @@ public class TrialAppProperties implements AppProperties {
 
     @Override
     public List<String> getMissingProperties() {
-        return Collections.emptyList();
+        return props.entrySet()
+                .stream()
+                .filter(p -> p.getValue().getClass().isAssignableFrom(Class.class))
+                .map(p -> p.getKey())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<String> getKnownProperties() {
-        return new ArrayList(props.keySet());
+        return props.entrySet()
+                .stream()
+                .map(p -> p.getKey())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -40,12 +49,19 @@ public class TrialAppProperties implements AppProperties {
 
     @Override
     public Object get(String key) {
-        return "dummy";
+        return props.get(key);
     }
 
     @Override
     public AppProperties concat(AppProperties that) {
-        return null;
+        final Map<String,Object> mThis = new HashMap<>(this.props);
+
+        that.getKnownProperties().forEach(k -> {
+            final String key = String.valueOf(k);
+            mThis.put(key,that.get(key));
+        });
+
+        return new TrialAppProperties(mThis);
     }
 }
 
