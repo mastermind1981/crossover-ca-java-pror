@@ -3,8 +3,8 @@ package com.crossover.trial.properties.parsers;
 import com.amazonaws.regions.Regions;
 import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.IntegerValidator;
-import org.apache.commons.validator.routines.UrlValidator;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,9 +82,12 @@ public class PropTypeMapper {
     }
 
     private static Optional<Object> isValidURL(String url) {
-        return new UrlValidator(new String[]{"http", "https"},
-                UrlValidator.ALLOW_LOCAL_URLS).isValid(url) ?
-                Optional.of(url) : Optional.empty();
+
+        try{
+            return Optional.of(new URL(url));
+        }catch (Exception e){
+            return Optional.of(URL.class);
+        }
     }
 
     private static Optional<Object> isValidJDBCURL(String url) {
