@@ -1,7 +1,6 @@
 package com.crossover.trial.properties;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A dummy implementation of TrialAppProperties, this clearly doesn't work. Candidates SHOULD change 
@@ -13,6 +12,12 @@ import java.util.List;
  */
 public class TrialAppProperties implements AppProperties {
 
+    private Map<String,Object> props;
+
+    public TrialAppProperties(Map<String,Object> props) {
+        this.props = props;
+    }
+
     @Override
     public List<String> getMissingProperties() {
         return Collections.emptyList();
@@ -20,7 +25,7 @@ public class TrialAppProperties implements AppProperties {
 
     @Override
     public List<String> getKnownProperties() {
-        return Collections.emptyList();
+        return new ArrayList(props.keySet());
     }
 
     @Override

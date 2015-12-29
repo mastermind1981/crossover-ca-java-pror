@@ -2,6 +2,7 @@ package com.crossover.trial.properties.loaders;
 
 import com.crossover.trial.properties.AppProperties;
 import com.crossover.trial.properties.Messages;
+import com.crossover.trial.properties.TrialAppProperties;
 import com.crossover.trial.properties.handler.ProtocolHandler;
 import com.crossover.trial.properties.parsers.JsonPropertiesParser;
 import com.crossover.trial.properties.parsers.PropertiesFileParser;
@@ -9,6 +10,7 @@ import com.crossover.trial.properties.parsers.PropertiesParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +24,9 @@ import java.util.Optional;
 public class PropertiesLoader {
 
     protected final Logger log = Logger.getLogger(PropertiesLoader.class);
+
+    private ProtocolHandler protocolHandler =
+            new ProtocolHandler(ClassLoader.getSystemClassLoader());
 
     protected String uri;
 
@@ -48,15 +53,11 @@ public class PropertiesLoader {
 
         try{
 
-            System.out.println(System.getProperty("java.protocol.handler.pkgs"));
-
-            final URL url = new URL(null, uri,
-                    new ProtocolHandler(ClassLoader.getSystemClassLoader()));
-
+            final URL url = buildUrl();
             final Map<String,Object> props =
                     parser.parseInput(url.openStream());
 
-//            opt = Optinal.of  ;
+           opt = Optional.of(new TrialAppProperties(props));
 
         }catch (NullPointerException npe) {
             log.error(Messages.CANT_LOAD_PARSER+": "+uri,npe);
@@ -65,6 +66,15 @@ public class PropertiesLoader {
         }
 
         return opt;
+
+    }
+
+    public URL buildUrl() throws MalformedURLException {
+
+        if(uri.startsWith("classpath")){
+            return new URL(null, uri, protocolHandler);
+        }else return new URL(uri);
+
 
     }
 

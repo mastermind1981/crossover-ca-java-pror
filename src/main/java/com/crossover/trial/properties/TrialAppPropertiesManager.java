@@ -53,6 +53,10 @@ public class TrialAppPropertiesManager implements AppPropertiesManager {
 
     @Override
     public void printProperties(AppProperties props, PrintStream sync) {
-        sync.println(props);
+        props.getKnownProperties().forEach(k -> {
+            final String key = String.valueOf(k);
+            final Object value = props.get(key);
+            sync.println(String.format("%s, %s, %s",key,value.getClass(),value));
+        });
     }
 }

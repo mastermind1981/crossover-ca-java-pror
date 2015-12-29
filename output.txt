@@ -1,1 +1,5 @@
-com.crossover.trial.properties.EmptyAppProperties@15975490
+JDBC_URL, class java.lang.String, dummy
+JDBC_USERNAME, class java.lang.String, dummy
+JDBC_DRIVER, class java.lang.String, dummy
+JDBC_PASSWORD, class java.lang.String, dummy
+JPA_SHOWSQL, class java.lang.String, dummy
